@@ -7,7 +7,12 @@ from datasets import load_dataset
 
 from sklearn.model_selection import KFold
 
-from src.utils.test_cases import check_quora_class_balance
+from src.utils.test_cases import (
+    check_quora_class_balance,
+    check_if_dataframe,
+    check_if_exploded_df_cols_correct,
+    check_data_leakage
+)
 
 
 def explode_quora_dataframe(
@@ -41,6 +46,7 @@ def explode_quora_dataframe(
     
     # Copy the 'is_duplicate' column
     new_df['is_duplicate'] = quora['is_duplicate']
+    check_if_exploded_df_cols_correct(new_df)
     return new_df
 
 
@@ -118,8 +124,13 @@ def create_k_fold_datasets(
     idx = 1
     for train_index, test_index in kf.split(dataset):
         # Get train and test dataframes
-        train_df = dataset.iloc[train_index]
-        test_df = dataset.iloc[test_index]
+        train_df = dataset.iloc[train_index].reset_index(drop=True)
+        test_df = dataset.iloc[test_index].reset_index(drop=True)
+        
+        # Test cases to check if the dataframes are valid & there is no data leakage
+        check_if_dataframe(train_df)
+        check_if_dataframe(test_df)
+        check_data_leakage(train_df, test_df)
 
         # dump the train and test dataframes as pickle files
         train_df.to_pickle(f"data/cross_folds/train_{idx}_folds.pkl")
@@ -127,6 +138,22 @@ def create_k_fold_datasets(
         idx += 1
     
     print(f"Created {num_folds} folds of the dataset and saved them as pickle files in data/cross_folds/")
+
+
+def load_df_from_pickle(
+        file_path:str
+    ) -> pd.DataFrame:
+    """
+    This function loads a dataframe from a pickle file.
+
+    :param file_path: Path of the pickle file
+
+    :return: Pandas dataframe
+    """
+
+    df = pd.read_pickle(file_path)
+    check_if_dataframe(df)
+    return df
 
         
 
