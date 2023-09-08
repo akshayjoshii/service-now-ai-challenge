@@ -49,8 +49,16 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 
 1. numpy
 2. tqdm
+3. datasets
+4. transformers
+5. pandas
+6. torch
 
 #### References
 
+- https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs
+- https://www.kaggle.com/competitions/quora-question-pairs/overview
 - https://medium.com/@dhartidhami/understanding-bert-word-embeddings-7dc4d2ea54ca
 - https://gombru.github.io/2019/04/03/ranking_loss/
+- https://huggingface.co/spaces/mteb/leaderboard
+- https://towardsdatascience.com/the-quora-question-pair-similarity-problem-3598477af172
