@@ -27,3 +27,4 @@ data/*
 !data/.gitkeep
 logs/*
 !logs/.gitkeep
+servicenow_venv/*
