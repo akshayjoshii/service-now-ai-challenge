@@ -96,9 +96,9 @@ def get_quora_dataset(
         return explode_quora_dataframe(quora)
 
 
-def get_k_fold_datasets(
+def create_k_fold_datasets(
         dataset:pd.DataFrame,
-        num_folds:int=3,
+        num_folds:int=5,
         rand_seed:int=7) -> None:
     """
     This function splits the dataset into num_folds folds and saves each fold as a pickle file.
@@ -106,23 +106,29 @@ def get_k_fold_datasets(
     :param dataset: Pandas dataframe to split into folds
     :param num_folds: Number of folds to split the dataset into
     :param rand_seed: Random seed for reproducibility
-    
+
+    :return: None
+
     """
 
     # Initialize KFold object with num_folds folds
     kf = KFold(n_splits=num_folds, shuffle=True, random_state=rand_seed)
 
     # Iterate over the folds
-    for idx, (train_index, test_index) in enumerate(kf.split(dataset)):
+    idx = 1
+    for train_index, test_index in kf.split(dataset):
         # Get train and test dataframes
         train_df = dataset.iloc[train_index]
         test_df = dataset.iloc[test_index]
 
-        # Save both the dataframes inside a single pickle file
+        # dump the train and test dataframes as pickle files
         train_df.to_pickle(f"data/cross_folds/train_{idx}_folds.pkl")
         test_df.to_pickle(f"data/cross_folds/test_{idx}_folds.pkl")
+        idx += 1
     
-    print(f"\nSaved {num_folds} folds of train & test dataframes in ./data/cross_folds/ folder.")
+    print(f"Created {num_folds} folds of the dataset and saved them as pickle files in data/cross_folds/")
+
+        
 
 
 
