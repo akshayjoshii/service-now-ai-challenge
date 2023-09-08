@@ -72,5 +72,9 @@ def check_data_leakage(df1:pd.DataFrame, df2:pd.DataFrame) -> None:
     df1_ids = set(df1['id'])
     df2_ids = set(df2['id'])
 
+    # Drop the id column
+    df1.drop('id', axis=1, inplace=True)
+    df2.drop('id', axis=1, inplace=True)
+
     # Check if there is data leakage
     assert len(df1_ids.intersection(df2_ids)) == 0, "There is data leakage between train and test sets"
