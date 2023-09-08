@@ -18,13 +18,10 @@
 *.pt
 
 # Ignore all serialized files
-*.pkl
+
 *.pickle
 *.ftr
 
 # Ignore everything in the data & logs folder except .gitkeep file
-data/*
-!data/.gitkeep
-logs/*
-!logs/.gitkeep
+
 servicenow_venv/*
