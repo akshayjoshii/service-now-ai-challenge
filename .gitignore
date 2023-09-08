@@ -22,6 +22,8 @@
 *.pickle
 *.ftr
 
-# Ignore everything in the data & logs folder
+# Ignore everything in the data & logs folder except .gitkeep file
 data/*
+!data/.gitkeep
 logs/*
+!logs/.gitkeep
