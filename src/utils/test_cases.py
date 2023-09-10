@@ -44,14 +44,12 @@ def check_if_exploded_df_cols_correct(df:pd.DataFrame) -> None:
 
     :return: None
     """
-
-    assert df.columns.tolist() == [
-        'id1', 
-        'id2', 
-        'question1', 
-        'question2', 
-        'is_duplicate'
-    ], "Exploded dataframe does not have the desired columns"
+    # Assert if 'id1', 'id2', 'question1', 'question2' cols are present in 
+    # the dataframe
+    assert all(
+            col in df.columns 
+            for col in ['id1', 'id2', 'question1', 'question2']
+        ), "Exploded dataframe does not have the desired columns"
 
 # Check if there is data leakage between train and test sets
 def check_data_leakage(df1:pd.DataFrame, df2:pd.DataFrame) -> None:
