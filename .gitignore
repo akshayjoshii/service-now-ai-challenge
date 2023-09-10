@@ -1,6 +1,9 @@
 # Ignore all log files
 *.log
 
+# Ignore .env files
+.env
+
 # Ignore all .pyc files
 *.pyc
 
