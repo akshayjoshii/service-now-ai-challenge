@@ -35,9 +35,12 @@ class GTEModel(nn.Module):
         """
         return AutoModel.from_pretrained(self.model_pth)
 
-    def forward(self, input_ids, 
-                attention_mask, 
-                token_type_ids) -> torch.Tensor:
+    def forward(
+            self, 
+            input_ids:torch.Tensor, 
+            attention_mask:torch.Tensor, 
+            token_type_ids:torch.Tensor
+        ) -> torch.Tensor:
         """ Forward pass of the model. """
         
         output = self.model(
