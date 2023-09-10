@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 from torch.utils import data as torch_data
 from sklearn.model_selection import train_test_split
 
-from src.utils.test_cases import (
+from utils.test_cases import (
     check_if_dataframe, 
     check_if_exploded_df_cols_correct
 )
@@ -41,7 +41,7 @@ class QQPDataset(torch_data.Dataset):
         check_if_exploded_df_cols_correct(dataset)
         
         # Just load dataframe with 3 columns
-        self.dataset = dataset[["question1", "questions2", "is_duplicate"]]
+        self.dataset = dataset[["question1", "question2", "is_duplicate"]]
 
         # Load the pretrained model's tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
@@ -52,9 +52,9 @@ class QQPDataset(torch_data.Dataset):
 
 
     def __getitem__(self, index:int) -> Union[
-                                            dict(torch.Tensor), 
-                                            dict(torch.Tensor), 
-                                            torch.Tensor(int)
+                                            dict, 
+                                            dict, 
+                                            torch.Tensor
                                         ]:
         """
         Fetch tuple of 3 tensors for each index.
