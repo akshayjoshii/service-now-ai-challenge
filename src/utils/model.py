@@ -20,7 +20,10 @@ class GTEModel(nn.Module):
     Pretrained Model Link: https://huggingface.co/thenlper/gte-base
     Additional Info: GTE model uses bert-base as the base model
     """
-    def __init__(self, model_name_or_path:str):
+    def __init__(
+            self, 
+            model_name_or_path:str="thenlper/gte-base"
+        ):
         super(GTEModel, self).__init__()
         self.model_pth = model_name_or_path
 
@@ -33,7 +36,8 @@ class GTEModel(nn.Module):
 
         :return: The pretrained model object
         """
-        return AutoModel.from_pretrained(self.model_pth)
+        return AutoModel.from_pretrained(self.model_pth,
+                                        output_hidden_states=True)
 
     def forward(
             self, 
@@ -52,12 +56,12 @@ class GTEModel(nn.Module):
         # Get all the hidden states from the model
         hidden_states = output['hidden_states']
 
-        # Average token embedding vectors from last 4 hidden layers to get 
+        # Average token embedding vectors from last 2 hidden layers to get 
         # a single averaged vector for each token. This is also called as 
         # Mean Pooling in the Sentence Transformers library.
         avg_hidden_states = torch.mean(
                                 torch.stack(
-                                    hidden_states[-4:]
+                                    hidden_states[-2:]
                                 ),
                                 dim=0
                             )
@@ -78,7 +82,10 @@ class AkshayFormer(GTEModel):
     This class adds 4.23 million parameters to the GTE Base model - which has 110M
     parameters.
     """
-    def __init__(self, model_name_or_path:str):
+    def __init__(
+            self, 
+            model_name_or_path:str="thenlper/gte-base"
+        ):
         super(AkshayFormer, self).__init__(model_name_or_path)
         
         # Add the bottleneck adapter in each encoder layer twice in 2 different
