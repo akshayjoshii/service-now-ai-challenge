@@ -8,7 +8,7 @@ from datasets import load_dataset
 
 from sklearn.model_selection import KFold
 
-from src.utils.test_cases import (
+from utils.test_cases import (
     check_quora_class_balance,
     check_if_dataframe,
     check_if_exploded_df_cols_correct,

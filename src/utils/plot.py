@@ -2,7 +2,6 @@
 # Email: akshayjoshi56@gmail.com
 # Date: 08/09/2023
 
-import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
