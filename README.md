@@ -53,8 +53,19 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 4. transformers
 5. pandas
 6. torch
+7. swifter
+8. scikit-learn
+9. nltk
 
-#### References
+#### Reference Papers
+
+1. Sentence-T5: Scalable Sentence Encoders from Pre-trained Text-to-Text Models [Link](https://arxiv.org/abs/2108.08877)
+2. Text Embeddings by Weakly-Supervised Contrastive Pre-training [Link](https://arxiv.org/abs/2212.03533)
+3. Towards General Text Embeddings with Multi-stage Contrastive Learning [Link](https://arxiv.org/abs/2308.03281)
+4. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks [Link](https://arxiv.org/abs/1908.10084)
+5. MTEB: Massive Text Embedding Benchmark [Link](https://arxiv.org/abs/2210.07316)
+
+#### Helpful Links
 
 - https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs
 - https://www.kaggle.com/competitions/quora-question-pairs/overview
@@ -62,3 +73,7 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 - https://gombru.github.io/2019/04/03/ranking_loss/
 - https://huggingface.co/spaces/mteb/leaderboard
 - https://towardsdatascience.com/the-quora-question-pair-similarity-problem-3598477af172
+
+&nbsp;
+
+**Author:** [Akshay Joshi](https://www.linkedin.com/in/akkshayjoshii)
