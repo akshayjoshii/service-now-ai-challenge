@@ -1,11 +1,11 @@
-from src.utils.dataset_utils import (
+from utils.dataset_utils import (
     get_quora_dataset, 
     create_k_fold_datasets,
     load_df_from_pickle
 )
 
-from src.utils.preprocess_utils import normalize_text
-from src.plot import plot_zipf_distribution
+from utils.preprocess_utils import normalize_text
+from utils.plot import plot_zipf_distribution
 
 
 if __name__ == "__main__":
@@ -32,6 +32,7 @@ if __name__ == "__main__":
         title="Zipf's Curve for Custom Quora Dataset: After Normalization", 
         save_path="plots/zipfs_curve_normalized.png"
     )
+
 
 
     
