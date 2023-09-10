@@ -4,14 +4,17 @@
 
 import torch
 import pandas as pd
+
 from transformers import AutoTokenizer
 from torch.utils import data as torch_data
+from sklearn.model_selection import train_test_split
 
-from typing import Union
 from src.utils.test_cases import (
     check_if_dataframe, 
     check_if_exploded_df_cols_correct
 )
+
+from typing import Union
 
 
 class QQPDataset(torch_data.Dataset):
@@ -31,7 +34,7 @@ class QQPDataset(torch_data.Dataset):
     def __init__(
                 self, 
                 dataset:pd.DataFrame,
-                model_name_or_path:str,
+                model_name_or_path:str="thenlper/gte-base",
                 max_seq_length:int=128
             ):
         check_if_dataframe(dataset)
@@ -64,7 +67,7 @@ class QQPDataset(torch_data.Dataset):
         # Tokenize the sampled question pair in batched mode
         encoded_pair = self.tokenizer(
                             [self.dataset.iloc[index]["question1"], 
-                             self.dataset.iloc[index]["question2"]],
+                            self.dataset.iloc[index]["question2"]],
                             padding='max_length',
                             truncation=True,
                             max_length=self.max_seq_length,
@@ -77,8 +80,75 @@ class QQPDataset(torch_data.Dataset):
                 )
         
         # encoded_pair is a dict with keys: input_ids, token_type_idsm attention_mask. 
-        # Each key is a list with 2 sublists: one for each ques in the pair
-        return encoded_pair, label
+        # Each key is a list with 2 sublists: one for each ques in the pair. 
+        # Split this into 2 dicts: one for que1 & other for que2
+        encoded_que1 = {k: v[0] for k, v in encoded_pair.items()}
+        encoded_que2 = {k: v[1] for k, v in encoded_pair.items()}
+
+        return encoded_que1, encoded_que2, label
+
+
+def get_dataset_generators(
+            train_df:pd.DataFrame,
+            test_df:pd.DataFrame,
+            model_name_or_path:str="thenlper/gte-base",
+            max_seq_length:int=128,
+            seed:int=7
+    ) -> Union[
+            torch_data.Dataset,
+            torch_data.Dataset,
+            torch_data.Dataset
+        ]:
+    """ 
+    This utility function returns the train, validation and test dataset generators.
+    
+        Takes the train (40K) & test (10K) datasets as input.
+        Train dataset is untouched.
+        For Test & Val datasets, we split the test dataset into 2 
+        parts: 5K & 5K (stratified, without replacement).
+
+    :param train_df: Train dataframe
+    :param test_df: Test dataframe
+
+    :return: Tuple of train, validation and test dataset generators
+    """
+
+    # Create train dataset generator
+    train_dataset = QQPDataset(
+                        dataset=train_df,
+                        model_name_or_path=model_name_or_path,
+                        max_seq_length=max_seq_length
+                    )
+
+    # Split the test dataset into 2 parts: 5K & 5K (stratified, without replacement)
+    # Use sklearn train_test_split with stratify
+    test_dset, val_dset = train_test_split(
+                            test_df, 
+                            test_size=0.5, 
+                            stratify=test_df["is_duplicate"],
+                            random_state=seed
+                        )
+    
+    # Check if both the datasets have equal samples
+    assert test_dset.shape[0] == val_dset.shape[0], \
+            "Test and Val datasets do not have equal no. of samples"
+
+    # Create test & val dataset generators
+    test_dataset = QQPDataset(
+                        dataset=test_dset,
+                        model_name_or_path=model_name_or_path,
+                        max_seq_length=max_seq_length
+                    )
+    
+    val_dataset = QQPDataset(
+                        dataset=val_dset,
+                        model_name_or_path=model_name_or_path,
+                        max_seq_length=max_seq_length
+                    )
+
+    return train_dataset, val_dataset, test_dataset
+    
+    
 
 
 
