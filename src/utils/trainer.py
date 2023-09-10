@@ -14,6 +14,7 @@ from torch.utils import data as torch_data
 from sklearn.metrics import classification_report
 
 from typing import Union
+# from accelerate import Accelerator
 
 # Track training progress using wandb
 import wandb
@@ -31,7 +32,14 @@ try:
 except:
     print('Unable to login to wandb. Please check your API key.'
           'And put your key in the .env file in src directory.')
-    
+
+
+# Set visible CUDA devices
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
+# Init HF Accelerate
+# accelerator = Accelerator()
+
 
 class AdapterTransfomerTrainer(object):
     def __init__(
@@ -71,7 +79,10 @@ class AdapterTransfomerTrainer(object):
         self.model_save_path = model_save_path
 
         # TODO: Use HF Accelerate to train on multiple GPUs
-        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        # Print on which device the model is being trained
+        print(f'\nTraining the model on: {self.device}')
 
         # Wandb project details
         self.wandb_project = 'servicenow-ai-challenge'
@@ -84,16 +95,18 @@ class AdapterTransfomerTrainer(object):
                 config={
                     'epochs': self.epochs,
                     'learning_rate': self.learning_rate,
-                    'only_update_adapter_grads': self.train_full_model
+                    'train_full_model': self.train_full_model,
+                    'batch_size': 3000,
+                    'cross_fold_id': 2
                     },
-                dir=os.path.join("..", "logs")
+                dir="logs"
                 )
 
         # If False, only update the gradients of the adapter layers
         if not self.train_full_model:
-            print("\n-" * 10) 
-            print("\nOnly 4.2M parameters will be finetuned instead of 114 M params. of the full model (110M in base model + 4.2M in adapter blocks)")
-            print("\n-" * 10)
+            print("\n", "-" * 10) 
+            print("\nOnly 4.7M parameters will be finetuned instead of 115 M params. of the full model (110M in base model + 4.7M in adapter blocks)")
+            print("\n", "-" * 10)
 
             for name, param in self.model.named_parameters():
                 if 'adapter' not in name:
@@ -257,7 +270,8 @@ class AdapterTransfomerTrainer(object):
             encoded_que1, encoded_que2, label = batch
 
             # Move the data to the device
-            label = label.to(self.device, dtype=torch.long)
+            label = label.to(self.device, 
+                            dtype=torch.long).squeeze(1)
             q1_ids = encoded_que1['input_ids'].to(self.device,
                                             dtype=torch.long).squeeze(1)
             q1_mask = encoded_que1['attention_mask'].to(self.device,
@@ -287,6 +301,11 @@ class AdapterTransfomerTrainer(object):
                                 q2_mask,
                                 q2_type_ids
                             )
+            
+            # q1_emb.shape = [64, 768]
+            # q2_emb.shape = [64, 768]
+            # label.shape = [64, 1]
+
 
             # Compute the cosine loss
             loss = self.cosine_loss(q1_embeddings, q2_embeddings, label)
@@ -322,7 +341,7 @@ class AdapterTransfomerTrainer(object):
                 encoded_que1, encoded_que2, label = batch
 
                 # Move the data to the device
-                label = label.to(self.device, dtype=torch.long)
+                label = label.to(self.device, dtype=torch.long).squeeze(1)
                 q1_ids = encoded_que1['input_ids'].to(self.device,
                                                 dtype=torch.long).squeeze(1)
                 q1_mask = encoded_que1['attention_mask'].to(self.device,
@@ -450,7 +469,6 @@ class AdapterTransfomerTrainer(object):
             self, 
             model_name:str='AkshayFormer',
             model_path:str=os.path.join(
-                                    "..", 
                                     "data", 
                                     "finetuned_models"
                                 )
