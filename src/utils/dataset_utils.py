@@ -2,6 +2,7 @@
 # Email: akshayjoshi56@gmail.com
 # Date: 08/09/2023
 
+import os
 import pandas as pd
 from datasets import load_dataset
 
@@ -133,8 +134,8 @@ def create_k_fold_datasets(
         check_data_leakage(train_df, test_df)
 
         # dump the train and test dataframes as pickle files
-        train_df.to_pickle(f"data/cross_folds/train_{idx}_folds.pkl")
-        test_df.to_pickle(f"data/cross_folds/test_{idx}_folds.pkl")
+        train_df.to_pickle(os.path.join("data", "cross_folds", f"train_{idx}_folds.pkl"))
+        test_df.to_pickle(os.path.join("data", "cross_folds", f"test_{idx}_folds.pkl"))
         idx += 1
     
     print(f"Created {num_folds} folds of the dataset and saved them as pickle files in data/cross_folds/")
