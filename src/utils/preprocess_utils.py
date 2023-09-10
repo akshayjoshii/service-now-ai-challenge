@@ -10,7 +10,9 @@ import nltk
 nltk.download('stopwords')
 stopwords = nltk.corpus.stopwords.words('english')
 
-""" Use 'swifter' for faster processing in all the functions below. """
+""" 
+Use 'swifter' for faster processing in all the functions below. 
+"""
 
 def encode_labels(df:pd.DataFrame) -> pd.DataFrame:
     """ 
