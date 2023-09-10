@@ -43,7 +43,7 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 
 1. Python >=3.8
 2. NVidia GPU - V100 or better
-3. Ubuntu >= 18.04 with CuDNN >= 11.1
+3. Ubuntu >= 18.04 with CuDNN >= 11.7
 
 **Primary Requirements:**
 
@@ -64,11 +64,13 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 3. Towards General Text Embeddings with Multi-stage Contrastive Learning [Link](https://arxiv.org/abs/2308.03281)
 4. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks [Link](https://arxiv.org/abs/1908.10084)
 5. MTEB: Massive Text Embedding Benchmark [Link](https://arxiv.org/abs/2210.07316)
+6. Batch-Softmax Contrastive Loss for Pairwise Sentence Scoring Tasks [Link](https://aclanthology.org/2022.naacl-main.9/)
 
 #### Helpful Links
 
 - https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs
 - https://www.kaggle.com/competitions/quora-question-pairs/overview
+- https://www.sbert.net/examples/training/quora_duplicate_questions/README.html
 - https://medium.com/@dhartidhami/understanding-bert-word-embeddings-7dc4d2ea54ca
 - https://gombru.github.io/2019/04/03/ranking_loss/
 - https://huggingface.co/spaces/mteb/leaderboard
