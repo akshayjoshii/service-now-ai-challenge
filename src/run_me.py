@@ -7,6 +7,10 @@ from utils.dataset_utils import (
 from utils.preprocess_utils import normalize_text
 from utils.plot import plot_zipf_distribution
 
+from utils.dataloader import get_dataset_generators
+from utils.model import AkshayFormer
+from utils.trainer import AdapterTransfomerTrainer
+
 
 if __name__ == "__main__":
     quora = get_quora_dataset()
@@ -32,6 +36,43 @@ if __name__ == "__main__":
         title="Zipf's Curve for Custom Quora Dataset: After Normalization", 
         save_path="plots/zipfs_curve_normalized.png"
     )
+
+    # Get dataset generators
+    train_dset, val_dset, test_dset = get_dataset_generators(
+                                    train_df=df1,
+                                    test_df=df2,
+                                    model_name_or_path="thenlper/gte-base",
+                                    max_seq_length=64,
+                                    seed=55
+                                )
+
+    # Get the AkshayFormer model
+    model = AkshayFormer(model_name_or_path="thenlper/gte-base")
+    trainer = AdapterTransfomerTrainer(
+                    model=model,
+                    epochs=50,
+                    learning_rate=0.05,
+                    train_full_model=True,
+                    model_save_name='AkshayFormer_AO_CV1',
+            )
+    
+    # Get the dataloaders
+    train_loader, test_loader, val_loader = trainer.get_data_loaders(
+                                                train_dset,
+                                                test_dset,
+                                                val_dset,
+                                                batch_size=256
+                                            )
+    
+    # Train the model
+    trainer.train(
+            train_loader, 
+            val_loader,
+            test_loader
+        )
+    
+
+
 
 
 
