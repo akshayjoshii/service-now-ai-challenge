@@ -35,7 +35,7 @@ except:
 
 
 # Set visible CUDA devices
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
 # Init HF Accelerate
 # accelerator = Accelerator()
@@ -49,8 +49,7 @@ class AdapterTransfomerTrainer(object):
             learning_rate:float,
             train_full_model:bool=False,
             model_save_name:str='AkshayFormer_Full_CV1',
-            model_save_path:str=os.path.join(
-                                    "..", 
+            model_save_path:str=os.path.join( 
                                     "data", 
                                     "finetuned_models"
                                 )
@@ -96,8 +95,9 @@ class AdapterTransfomerTrainer(object):
                     'epochs': self.epochs,
                     'learning_rate': self.learning_rate,
                     'train_full_model': self.train_full_model,
-                    'batch_size': 3000,
-                    'cross_fold_id': 2
+                    'max_seq_length':64,
+                    'batch_size': 7168,
+                    'cross_fold_id': 1
                     },
                 dir="logs"
                 )
@@ -113,9 +113,9 @@ class AdapterTransfomerTrainer(object):
                     param.requires_grad = False
 
         else:
-            print("\n-" * 10) 
+            print("\n", "-" * 10) 
             print("\nAll the 114M parameters of the model will be finetuned!")
-            print("\n-" * 10)
+            print("\n", "-" * 10)
 
         # Total number of trainable parameters in the model
         print('\nTotal number of trainable parameters in the model: ' 
@@ -244,6 +244,7 @@ class AdapterTransfomerTrainer(object):
         wandb.finish()
 
         # Save the model
+        print("\nSaving the finetuned model...")
         self.save_model(
                 model_name=self.model_save_name,
                 model_path=self.model_save_path
@@ -290,27 +291,26 @@ class AdapterTransfomerTrainer(object):
                                             dtype=torch.long).squeeze(1)
             
             # Get the embeddings from the model
-            q1_embeddings = self.model(
+            q1_embs = self.model(
                                 q1_ids,
                                 q1_mask,
                                 q1_type_ids
                             )
             
-            q2_embeddings = self.model(
+            q2_embs = self.model(
                                 q2_ids,
                                 q2_mask,
                                 q2_type_ids
                             )
             
-            # q1_emb.shape = [64, 768]
-            # q2_emb.shape = [64, 768]
-            # label.shape = [64, 1]
-
 
             # Compute the cosine loss
-            loss = self.cosine_loss(q1_embeddings, q2_embeddings, label)
+            loss = self.cosine_loss(q1_embs, q2_embs, label)
 
-            loss.requires_grad = True
+
+            # Activate only when we are just training the adapter layers
+            if not self.train_full_model:
+                loss.requires_grad = True
             loss.backward()
 
             self.optimizer.zero_grad()
@@ -360,20 +360,20 @@ class AdapterTransfomerTrainer(object):
                                                 dtype=torch.long).squeeze(1)
                 
                 # Get the embeddings from the model
-                q1_embeddings = self.model(
+                q1_embs = self.model(
                                     q1_ids,
                                     q1_mask,
                                     q1_type_ids
-                                )
+                                )   
                 
-                q2_embeddings = self.model(
+                q2_embs = self.model(
                                     q2_ids,
                                     q2_mask,
                                     q2_type_ids
                                 )
 
                 # Compute the cosine loss
-                loss = self.cosine_loss(q1_embeddings, q2_embeddings, label)
+                loss = self.cosine_loss(q1_embs, q2_embs, label)
 
                 # Detach the loss from the graph & send to cpu
                 loss = loss.detach().cpu()
@@ -458,7 +458,8 @@ class AdapterTransfomerTrainer(object):
                 classification_report_dict = classification_report(
                                                 label,
                                                 cosine_sim,
-                                                output_dict=True
+                                                output_dict=True,
+                                                zero_division=1
                                             )
 
                 # Log the classification report using wandb
