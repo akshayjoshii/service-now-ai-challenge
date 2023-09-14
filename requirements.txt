@@ -11,3 +11,4 @@ torch==2.0.1
 wandb==0.15.10
 python-dotenv==1.0.0
 unstructured==0.10.6
+tqdm==4.66.1
