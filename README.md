@@ -66,6 +66,7 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 5. MTEB: Massive Text Embedding Benchmark [Link](https://arxiv.org/abs/2210.07316)
 6. Batch-Softmax Contrastive Loss for Pairwise Sentence Scoring Tasks [Link](https://aclanthology.org/2022.naacl-main.9/)
 7. ADAM + AMSGRAD: On the Convergence of Adam and Beyond [Link](https://openreview.net/forum?id=ryQu7f-RZ)
+8. A Divide-and-Conquer Approach to the Summarization of Long Documents [Link](https://ieeexplore.ieee.org/document/9257174)
 
 #### Helpful Links
 
