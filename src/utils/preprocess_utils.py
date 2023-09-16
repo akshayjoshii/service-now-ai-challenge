@@ -13,6 +13,8 @@ import nltk
 nltk.download('stopwords')
 stopwords = nltk.corpus.stopwords.words('english')
 
+from typing import Union
+
 """ 
 Use 'swifter' for faster processing in all the functions below. 
 """
@@ -98,21 +100,18 @@ def normalize_text(df:pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def create_text_chunks(
-        long_text:str,
+def load_tokenizer(
         tokenizer_name_or_path:str="google/flan-t5-large"
-    ) -> list[str]:
-    """ 
-    This method acepts really long input text & creates non-overlapping 
-    chunks of text of length max_model_length. It also makes sure any sentence 
-    is not split in between when chunk length is reached. In such cases, the
-    sentence is added to the next chunk. 
+        ) -> Union[
+                T5TokenizerFast,
+                AutoTokenizer]:
+    """
+    This method loads the tokenizer specified by the user. By default, it uses the
+    tokenizer for T5 model.
 
-    :param long_text: Input text
-    :param tokenizer_name_or_path: Name or path of the tokenizer to be used. By 
-                                    default, it uses the tokenizer for T5 model.
+    :param tokenizer_name_or_path: Name or path of the tokenizer to be used.
 
-    :return: List of text chunks
+    :return: Tokenizer object
     """
 
     try:
@@ -122,6 +121,28 @@ def create_text_chunks(
     except:
         # When any other tokenizer is used
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path)
+
+    return tokenizer
+
+
+def create_text_chunks(
+        long_text:str,
+        tokenizer:Union[
+                        T5TokenizerFast,
+                        AutoTokenizer
+                    ]
+    ) -> list[str]:
+    """ 
+    This method acepts really long input text & creates non-overlapping 
+    chunks of text of length max_model_length. It also makes sure any sentence 
+    is not split in between when chunk length is reached. In such cases, the
+    sentence is added to the next chunk. 
+
+    :param long_text: Input text
+    :param tokenizer: Tokenizer object
+
+    :return: List of text chunks
+    """
 
     # Get the max length of the model
     max_model_length = tokenizer.model_max_length
@@ -134,13 +155,13 @@ def create_text_chunks(
     count = -1
 
     # Temp string to store the chunk
-    chunk = ""
+    chunk = "summarize: "
 
     # List to store all the chunks
     chunks = []
 
     # Wrap using tqdm for progress bar
-    for sentence in tqdm(sentences):
+    for sentence in tqdm(sentences, desc="Creating text chunks"):
         count += 1
 
         # Add the no. of sentence tokens to the length counter
@@ -160,7 +181,7 @@ def create_text_chunks(
             
             # Reset the counters for a new chunk 
             length = 0 
-            chunk = ""
+            chunk = "summarize: "
 
             # Take care of the overflow sentence (i.e., sentence whose partial portion
             # can only be saved in the previous chunk)
@@ -170,5 +191,8 @@ def create_text_chunks(
     return chunks
 
 
+
+
+
 if __name__ == "__main__":
-    create_text_chunks("Akshay Joshi" * 200)
+    chunks = create_text_chunks("Akshay Joshi" * 200)
