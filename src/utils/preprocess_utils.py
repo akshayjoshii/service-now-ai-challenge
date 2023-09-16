@@ -191,6 +191,34 @@ def create_text_chunks(
     return chunks
 
 
+def tokenize_text_chunks(
+        text_chunks:list[str],
+        tokenizer:Union[
+                        T5TokenizerFast,
+                        AutoTokenizer
+                    ]
+    ) -> dict:
+    """ 
+    This method acepts a list of text chunks & tokenizes them using the tokenizer 
+    specified by the user in batches. 
+
+    :param text_chunks: List of text chunks
+    :param tokenizer_obj: Tokenizer object
+
+    :return: generator object which yields tokenized text chunks
+    """
+
+    for text_chunk in text_chunks:
+        # Tokenize the text chunks
+        tokenized_text_chunk = tokenizer(
+                                    text_chunk,
+                                    padding=False,
+                                    truncation=True,
+                                    return_tensors="pt",
+                                    max_length=tokenizer.model_max_length,
+                                )
+
+        yield tokenized_text_chunk
 
 
 
