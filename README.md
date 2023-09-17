@@ -37,6 +37,12 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 
 3. Please report all hyperparameters used if any.
 
+## Solutions Implemented
+
+1. **Paraphrase Detection:** General Text Emebdding Model with Custom Bi-Layer Adapter Fusion. I've shamelessly named this model as **AkshayFormer**. AkshayFormer is built with just PyTorch & does not use any fancy libraries such as PEFT, qLORA, HF Trainer, SentenceTransformers etc. The model is trained using self-supervised Pairwise Cosine Embedding Contrastive Loss. Trainer code is available in `src/task_1.ipynb`. If you'd want to train the model in a performant, multi-gpu setup, use `src/task_1_run_me.py` script.
+2. **Content Summarization:** Implemented a **recursive hierarchical abstractive summarization** system which uses pretrained Flan-T5 transformer model to first generate summaries for text chunks (512 sub-words) in the very very large input text extracted from SEC financial 10-K reports. The summaries generated in this strided/sliding window mechanism are then recursively used to generate a global summary (with a larger receptive field - just like Convolutional Neural Networks) for the entire input text. The code for this is available in `src/task_2.ipynb`.
+
+
 ### Requirements
 
 **Critical Requirements:**
@@ -52,10 +58,14 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 3. datasets
 4. transformers
 5. pandas
-6. torch
+6. pytorch
 7. swifter
 8. scikit-learn
 9. nltk
+10. wandb
+11. unstructured
+12. matplotlib
+13. python-dotenv
 
 #### Reference Papers
 
