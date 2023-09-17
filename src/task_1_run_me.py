@@ -12,6 +12,14 @@ from utils.model import AkshayFormer
 from utils.trainer import AdapterTransfomerTrainer
 
 
+""" 
+Run this script to train & evaluate the model on multiple GPUs. The same
+thing could be done through the notebook file as well, but notebook are slow & 
+cause a lot of hassle around imports & variables deferencing. So, each time you make
+any code changes in the custom methods, you'd have to restart the notebook kernel!
+"""
+
+
 if __name__ == "__main__":
     quora = get_quora_dataset()
 
@@ -29,8 +37,11 @@ if __name__ == "__main__":
         save_path="plots/zipfs_curve_unnormalized.png"
     )
 
+    # Normalize text using a set of preprocessing steps
     df1 = normalize_text(df1)
     df2 = normalize_text(df2)
+
+    # Plot Zipfs curve for normalized text
     plot_zipf_distribution(
         dataframes=(df1, df2),
         title="Zipf's Curve for Custom Quora Dataset: After Normalization", 
