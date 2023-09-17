@@ -77,6 +77,7 @@ You are asked to extract and summarize useful information from a 10-K report. Us
 - https://gombru.github.io/2019/04/03/ranking_loss/
 - https://huggingface.co/spaces/mteb/leaderboard
 - https://towardsdatascience.com/the-quora-question-pair-similarity-problem-3598477af172
+- https://huggingface.co/blog/how-to-generate
 
 &nbsp;
 
